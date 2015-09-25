@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">나무늘보</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_view_package_name">ViewPackageName</string>
+    <string name="title_activity_view_app_name">ViewAppName</string>
+    <string name="facility_title">활성화시 아래 기능이 실행되요</string>
+    <string name="facility_1">- 비행기 탑승 모드가 실행되요</string>
+    <string name="facility_2">- 원하는 프로세스를 종료할수있어요</string>
+    <string name="facility_3">- 화면 밝기가 줄어들어요</string>
+    <string name="title_activity_main_service">MainService</string>
+    <string name="title_activity_app_list">AppList</string>
+    <string name="title_activity_list">ListActivity</string>
+
+</resources>
