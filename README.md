@@ -11,6 +11,6 @@ https://play.google.com/store/apps/details?id=com.dmlwp.blockleaking
 1.0 - Release
 
 # Memo
-Splash Activity (MainActivity -> ListActivity)
+Splash Activity (MainActivity -> ListActivity) \n
 Variety Library (AQuery etc...)
 When the mode is on, I want to prevent user from exiting...
