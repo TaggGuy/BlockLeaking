@@ -17,20 +17,49 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnClickListener {
 
 	boolean isModeOn;
 	float curBrightness;
+	
+	ImageView ivOn;
+	ImageView ivOff;
+	
+	SharedPreferences mode;
+	SharedPreferences.Editor setting;
+	
+	AlertDialog.Builder alert;
+	
+	@Override
+	public void onClick(View v) {
+		switch(v.getId())
+		{
+		case R.id.imageOn:
+			setMode(false);
+			
+			setting.remove("isModeOn");
+			setting.clear();
+			setting.commit();
+			break;
+		case R.id.imageOff:
+			setMode(true);
 
+			setting.putBoolean("isModeOn", isModeOn);
+			setting.commit();
+			break;
+		}
+	}
+	
 	@Override
 	public void onBackPressed() {
 		if (isModeOn) {
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			alert = new AlertDialog.Builder(this);
 			
 			alert.setIcon(R.drawable.warning);
 			alert.setTitle("절전모드를 꺼주세요");
@@ -43,49 +72,33 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// 전체화면 설정
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
+		
+		//setting full screen
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		isModeOn = false;
 
-		final ImageView ivOn = (ImageView) findViewById(R.id.imageOn);
-		final ImageView ivOff = (ImageView) findViewById(R.id.imageOff);
-
-		SharedPreferences mode = getSharedPreferences("mode", 0);
-		final SharedPreferences.Editor setting = mode.edit();
+		//setting view
+		ivOn  = (ImageView) findViewById(R.id.imageOn);
+		ivOff = (ImageView) findViewById(R.id.imageOff);
+		ivOn.setOnClickListener(this);
+		ivOff.setOnClickListener(this);
+		
+		//setting preference
+		mode = getSharedPreferences("mode", 0);
+		setting = mode.edit();
 
 		if (mode.getBoolean("isModeOn", false) == false) {
 			ivOn.setVisibility(View.GONE);
 			ivOff.setVisibility(View.VISIBLE);
-			// 모드가 꺼져있으면 off버튼만보여줌
+			//If the mode is off, it will show off image
 		} else {
 			ivOn.setVisibility(View.VISIBLE);
 			ivOff.setVisibility(View.GONE);
-			// 모드가 켜져있으면 on버튼만보여줌
+			//If the mode is on, it will show on image
 		}
 
-		ivOff.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				setMode(true, ivOn, ivOff);
-
-				setting.putBoolean("isModeOn", isModeOn);
-				setting.commit();
-			}
-		});
-
-		ivOn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				setMode(false, ivOn, ivOff);
-				
-				setting.remove("isModeOn");
-				setting.clear();
-				setting.commit();
-			}
-		});
-		// viewProcessList();
 	}
 
 	public void setAirplaneMode(boolean mode) {
@@ -135,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			Method dataMtd = ConnectivityManager.class.getDeclaredMethod("setMobileDataEnabled", boolean.class);
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			
 			if (logic) {
 				dataMtd.invoke(cm, true);
 				Toast.makeText(this, "데이터가 켜졌어요", Toast.LENGTH_SHORT).show();
@@ -153,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public void alertWifi() {
-		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert = new AlertDialog.Builder(this);
 		final WifiManager wifi = (WifiManager) getSystemService(WIFI_SERVICE);
 		
 		alert.setIcon(R.drawable.wifi);
@@ -179,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public void alertData() {
-		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert = new AlertDialog.Builder(this);
 		
 		alert.setIcon(R.drawable.data);
 		alert.setTitle("데이터");
@@ -202,34 +216,43 @@ public class MainActivity extends AppCompatActivity {
 		alert.show();
 	}
 
-	public void killActivity() {
-		startActivity(new Intent(this, ListActivity.class));
-	}
-
-	public void setMode(boolean logic, ImageView on, ImageView off) {
+	public void setMode(boolean logic) {
 		WifiManager wifi = (WifiManager) getSystemService(WIFI_SERVICE);
 		ListActivity la = new ListActivity();
 		if (logic) {
-			off.setVisibility(View.GONE);
-			on.setVisibility(View.VISIBLE);
+			ivOff.setVisibility(View.GONE);
+			ivOn.setVisibility(View.VISIBLE);
 			
-			killActivity();
+			startActivity(new Intent(this, ListActivity.class));
 			setAirplaneMode(true);
 			setBrightness(true);
 			wifi.setWifiEnabled(false);
 			
+			/* off숨기고 on보여줌
+			 * ListActivity로이동
+			 * 비행기탑승모드 사용
+			 * 화면 밝기 낮춤
+			 * 와이파이 중지
+			 */
 
 			isModeOn = true;
 		} else {
-			on.setVisibility(View.GONE);
-			off.setVisibility(View.VISIBLE);
+			ivOn.setVisibility(View.GONE);
+			ivOff.setVisibility(View.VISIBLE);
 			
 			setAirplaneMode(false);
 			alertWifi();
 			alertData();
 			setBrightness(false);
 			la.KillProcess(false);
-
+			
+			/* off보여주고 on숨김
+			 * 비행기탑승모드 중지
+			 * 화면 밝기 복구
+			 * 와이파이,데이터 통신 알람
+			 * 프로세스 중지쓰레드 종료
+			 */
+			
 			isModeOn = false;
 		}
 	}

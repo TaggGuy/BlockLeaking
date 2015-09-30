@@ -42,13 +42,13 @@ public class CustomAdapter extends BaseAdapter {
 
 	public ArrayList<Integer> getChecked(){
         int size = isChecked.length;
-        ArrayList<Integer> mArrayList = new ArrayList<Integer>();
+        ArrayList<Integer> checkedList = new ArrayList<Integer>();
         for(int i=0 ; i<size ; i++){
             if(isChecked[i]){
-                mArrayList.add(i);
+            	checkedList.add(i);
             }
         }
-        return mArrayList;
+        return checkedList;
     }
 	
 	@Override
@@ -65,27 +65,6 @@ public class CustomAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return position;
 	}
-
-	/*
-	 * public void viewProcessList() { ActivityManager am = (ActivityManager)
-	 * getSystemService(Context.ACTIVITY_SERVICE);
-	 * List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfoList =
-	 * am.getRunningAppProcesses();
-	 * 
-	 * List<String> processList = new ArrayList<String>();
-	 * 
-	 * for (ActivityManager.RunningAppProcessInfo rapi :
-	 * runningAppProcessInfoList) { processList.add(rapi.processName); // 저장한
-	 * 리스트의 크기만큼 문자열로 프로세스 이름을 저장
-	 * 
-	 * 
-	 * StringBuilder processNames = new StringBuilder(); // 크기가 클수있으니
-	 * 
-	 * for (String processName : processList) {
-	 * processNames.append(processName); processNames.append('\n'); }
-	 * 
-	 * } }
-	 */
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {

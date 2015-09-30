@@ -15,7 +15,7 @@ public class KillProcess extends Thread {
 	List<PackageInfo> data;
 	Method mtd;
 
-	static boolean _FLAG = false;
+	static boolean _FLAG = true;
 
 	KillProcess(ActivityManager am, List<PackageInfo> data, List<Integer> position) {
 		this.am = am;
@@ -24,14 +24,12 @@ public class KillProcess extends Thread {
 	}
 
 	public static void myStop() {
-		_FLAG = true;
+		_FLAG = false;
 	}
 
 	@Override
 	public void run() {
-		while (true) {
-			if (_FLAG)
-				break;
+		while (_FLAG) {
 			try {
 				// 1/1000초 단위로 입력하면 해당 시간동안 non-runnable상태로 빠지게 된다.
 				// 1000을 입력하면 1초 쉰다.

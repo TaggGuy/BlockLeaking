@@ -18,8 +18,11 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends AppCompatActivity implements OnClickListener {
 
+	Button allButton;
+	Button checkButton;
+	
 	List<PackageInfo> tempList = new ArrayList<PackageInfo>();
 
 	List<Integer> positionList;
@@ -31,26 +34,35 @@ public class ListActivity extends AppCompatActivity {
 	KillProcess kp;
 	
 	@Override
+	public void onClick(View v)
+	{
+		switch(v.getId())
+		{
+		case R.id.list_all_button:
+			myAdapter.setAllChecked(isAllChecked);
+			isAllChecked = !isAllChecked;
+			// Adapter에 Data에 변화가 생겼을때 Adapter에 알려준다.
+			myAdapter.notifyDataSetChanged();
+			break;
+		case R.id.list_check_button:
+			KillProcess(true);
+			break;
+		}
+	}
+	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// 전체화면 설정
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_list);
-
-		final Button button1 = (Button) findViewById(R.id.list_all_button);
-		Button button2 = (Button) findViewById(R.id.list_check_button);
-
-		button1.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				myAdapter.setAllChecked(isAllChecked);
-				isAllChecked = !isAllChecked;
-				// Adapter에 Data에 변화가 생겼을때 Adapter에 알려준다.
-				myAdapter.notifyDataSetChanged();
-
-			}
-		});
-
+		
+		allButton = (Button)findViewById(R.id.list_all_button);
+		checkButton = (Button)findViewById(R.id.list_check_button);
+		allButton.setOnClickListener(this);
+		checkButton.setOnClickListener(this);
+		
+		//setting full screen
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		PackageManager pm = getPackageManager();
 		tempList = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS);
 
@@ -65,19 +77,10 @@ public class ListActivity extends AppCompatActivity {
 
 		myAdapter = new CustomAdapter(data, getLayoutInflater(), pm);
 
-		button2.setOnClickListener(listener1);
-
 		listView = (ListView) findViewById(R.id.listView);
 		listView.setOnItemClickListener(listener2);
 		listView.setAdapter(myAdapter);
 	}
-
-	OnClickListener listener1 = new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			KillProcess(true);
-		}
-	};
 
 	AdapterView.OnItemClickListener listener2 = new AdapterView.OnItemClickListener() {
 		@Override
